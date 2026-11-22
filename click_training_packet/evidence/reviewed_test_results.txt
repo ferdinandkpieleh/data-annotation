@@ -1,0 +1,21 @@
+........................................................................ [  8%]
+...................................x.................................... [ 17%]
+........................................................................ [ 26%]
+........................................................................ [ 35%]
+........................................................................ [ 43%]
+........................................................................ [ 52%]
+......................................................ssssssssssssssssss [ 61%]
+sss..................................................................... [ 70%]
+........................................................................ [ 79%]
+..................................................................F..... [ 87%]
+........................................................................ [ 96%]
+...........................                                              [100%]
+=================================== FAILURES ===================================
+_______________ test_empty_string_enum_default_uses_member_name ________________
+da_training_project_tests/test_requirement_edges.py:47: in test_empty_string_enum_default_uses_member_name
+    assert "default: EMPTY" in result.output
+E   assert 'default: EMPTY' in 'Usage: cli [OPTIONS]\n\nOptions:\n  --mode [EMPTY|SAFE]  [default: ""]\n  --help               Show this message and exit.\n'
+E    +  where 'Usage: cli [OPTIONS]\n\nOptions:\n  --mode [EMPTY|SAFE]  [default: ""]\n  --help               Show this message and exit.\n' = <Result okay>.output
+=========================== short test summary info ============================
+FAILED da_training_project_tests/test_requirement_edges.py::test_empty_string_enum_default_uses_member_name
+1 failed, 796 passed, 21 skipped, 1 xfailed in 0.79s

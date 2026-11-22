@@ -1,0 +1,20 @@
+..................................................F......F..........     [100%]
+=================================== FAILURES ===================================
+____________ TestShowDefault.test_callable_default_shown_as_dynamic ____________
+../click-verifier-run/da_training_project_tests/test_typed_choice.py:524: in test_callable_default_shown_as_dynamic
+    assert "SAFE" not in result.output
+E   AssertionError: assert 'SAFE' not in 'Usage: cli ... and exit.\n'
+E     
+E     'SAFE' is contained here:
+E       ode [FAST|SAFE]  [default: (dynamic)]
+E     ?           ++++
+E         --help              Show this message and exit.
+_____ TestShellCompletion.test_duplicate_canonical_tokens_emit_first_only ______
+../click-verifier-run/da_training_project_tests/test_typed_choice.py:578: in test_duplicate_canonical_tokens_emit_first_only
+    assert len(words) == 1
+E   AssertionError: assert 2 == 1
+E    +  where 2 = len(['A', 'B'])
+=========================== short test summary info ============================
+FAILED ../click-verifier-run/da_training_project_tests/test_typed_choice.py::TestShowDefault::test_callable_default_shown_as_dynamic
+FAILED ../click-verifier-run/da_training_project_tests/test_typed_choice.py::TestShellCompletion::test_duplicate_canonical_tokens_emit_first_only
+2 failed, 66 passed in 0.08s

@@ -1,0 +1,5 @@
+# Reflection draft — edit to reflect your own experience
+
+With AI assistance, I selected Click because it is a Python project with a permissive license, clear public interfaces, and a fast existing test suite. This made it possible to validate the starting environment before designing the task. I focused the problem on typed choices because a useful implementation must connect conversion, normalization, defaults, help output, and shell completion. I wanted to test whether the coding model could preserve consistent behavior across those interactions, including Unicode and enum edge cases.
+
+The review showed why passing a model's own tests is insufficient. The solution missed an empty-valued enum default, while the generated verifier suite also contained incorrect expectations that needed correction. I learned to distinguish a real implementation failure from a faulty test. Preparing the Docker exercise clarified the roles of the build context, hidden configuration files, port mapping, fixed source commits, and npm's lockfile. I still need to verify the image build and container behavior on my own machine before describing the Docker exercise as completed.

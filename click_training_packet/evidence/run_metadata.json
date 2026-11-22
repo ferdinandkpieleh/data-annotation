@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/pallets/click",
+  "commit": "934813e4d421071a1b3db3973c02fe2721359a6e",
+  "license": "BSD-3-Clause",
+  "opencode_version": "1.19.6",
+  "python_version": "3.12.14",
+  "pytest_version": "8.3.4",
+  "checker_model": "myprovider/claude-carrot",
+  "coding_model": "myprovider/claude-celery",
+  "test_model": "myprovider/claude-carrot",
+  "checker_session": "ses_dfbaa0d0fffeREd3tnh6SrYmdU",
+  "coding_session": "ses_dfba8e63affey1qSSl2g2JbTNt",
+  "test_generation_session": "ses_dfba5bf3cffe8zvTwY31tshICq",
+  "test_suite_reviewed": true,
+  "solution_failure_observed": true,
+  "docker_build_verified": false
+}

@@ -1,0 +1,31 @@
+Extend Click Choice to support typed choices consistently across parsing, help, defaults, and shell completion.
+
+Starting codebase: pallets/click, commit 934813e4d421071a1b3db3973c02fe2721359a6e (8.1.8).
+
+Applications currently have to turn enums and other domain values into strings before using click.Choice, then convert them back in callbacks. Extend the existing Choice type so applications can keep the original objects while presenting useful command-line tokens. Integrate the change into Click's existing parameter processing and help/completion behavior rather than adding a separate parser.
+
+Required behavior:
+
+1. Choice accepts any finite iterable, including an Enum class and a one-shot generator. Consume the iterable once during construction and retain an ordered snapshot. Later mutation of the original iterable must not change the available choices. Preserve the original objects; choices may be unhashable. An Enum class follows ordinary Python enum iteration, so aliases are not added separately unless explicitly supplied in an iterable.
+
+2. Define a choice's canonical token as its .name if it is an enum.Enum member (including enums that also subclass str or int), and str(choice) otherwise. Add the public method normalize_choice(self, choice, ctx), where ctx may be None. Its default implementation obtains the canonical token, applies ctx.token_normalize_func if present, then applies str.casefold() when case_sensitive=False, in that order. The normalizer must receive strings. Subclasses may override normalize_choice; both conversion and completion must honor the override for candidates and input. Assume canonical tokens and normalizer outputs are strings, and user-provided normalization functions are deterministic.
+
+3. Conversion compares normalized input against normalized choices and returns the original stored object for the first match in source order, never its string representation. Apply the same canonical-token rule to non-string input values, such as typed defaults. If multiple choices normalize to the same token, the first matching choice wins even when the supplied value is itself a later stored object. Do not require hashable choices. If nothing matches, raise Click's normal BadParameter rather than leaking AttributeError or TypeError. Retain the existing handling of a missing value (None) in parameter processing; None is outside the supported choice values for this task.
+
+4. Matching must work through ordinary Click options and arguments, explicit command-line values, environment variables, default_map values, direct defaults, callable defaults, repeated options (multiple=True), and fixed-size options (nargs=2). Preserve the existing tuple structure, precedence, callback behavior, and ParameterSource reporting. A reusable Choice must honor the context supplied to each operation; using one context's normalizer must not change subsequent behavior under a different context or with ctx=None.
+
+5. Metavars, missing-value choice lists, and the allowed-choice portion of invalid-value errors use canonical tokens in source order. Keep the existing bracket/brace conventions and existing string-choice error wording. Do not display an Enum's qualified name or .value in place of its member name. Normalization affects matching, not the spelling of these displayed tokens. Keep all existing public method call signatures compatible except for the newly added normalize_choice method. Choice.to_info_dict() must expose "choices" as a list of the original objects in source order and retain the existing other fields; JSON serialization of arbitrary objects is not required.
+
+6. For a Choice option whose show_default behavior is enabled, help must display a stored Enum member default using its canonical token. This also applies to a flat list or tuple of defaults for a repeated option with nargs=1: show their canonical tokens joined by comma and space, as with existing repeated defaults. Preserve explicit string show_default overrides and the existing display of callable defaults as dynamic; generating help must not call a callable default. Do not change how defaults of non-Choice types are displayed.
+
+7. Shell completion uses normalized prefix matching: a choice matches when normalize_choice(choice, ctx).startswith(normalize_choice(incomplete, ctx)). Return CompletionItem values containing the unnormalized canonical tokens, in source order. This applies to empty input too: normalize it using the same method. For choices with identical canonical tokens, emit only the first such token; distinct canonical tokens that normalize alike must both be offered when they match. Conversion and completion must agree on Unicode casefolding and context normalization. Returned completion tokens must be acceptable to conversion under the same context.
+
+8. Keep existing behavior for ordinary, unambiguous string choices and unrelated Click features. The existing baseline test suite must continue to pass without weakening or deleting its assertions. Add regression tests for the new behavior. Do not add runtime dependencies.
+
+Examples (these illustrate rather than replace the requirements):
+- With class Mode(Enum): FAST = "fast-value"; SAFE = "safe-value", Choice(Mode).convert("FAST", None, None) returns Mode.FAST, and option help lists [FAST|SAFE].
+- Choice([10, 20]).convert("20", None, None) returns the original integer 20.
+- Choice(["Straße", "STRASSE"], case_sensitive=False) converts "strasse" to the first original choice and completes "STRASS" to both "Straße" and "STRASSE".
+- With a context normalizer that replaces '-' with '_', Choice(["read_only"]) accepts "read-only" and completes "read-" to "read_only".
+
+Implement the feature in this checkout. Do not fetch a newer Click implementation or inspect upstream history to obtain a solution.
